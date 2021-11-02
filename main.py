@@ -45,6 +45,8 @@ def cost(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rat
     J = J / m
 
     return J
+
+
 if __name__ == '__main__':
     data = loadmat('ex4data1.mat')
     # print(data)
