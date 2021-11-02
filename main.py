@@ -26,6 +26,16 @@ if __name__ == '__main__':
     theta1, theta2 = weight['Theta1'], weight['Theta2']  # (25, 401) (10, 26)
     # print(theta1.shape, theta2.shape)
 
+    sample_idx = np.random.choice(np.arange(data['X'].shape[0]), 100)
+    sample_images = data['X'][sample_idx, :]
+    fig, ax_array = plt.subplots(nrows=10, ncols=10, sharey=True, sharex=True, figsize=(12, 12))
+    for r in range(10):
+        for c in range(10):
+            ax_array[r, c].matshow(np.array(sample_images[10 * r + c].reshape((20, 20))).T, cmap=matplotlib.cm.binary)
+            plt.xticks(np.array([]))
+            plt.yticks(np.array([]))
+    plt.show()
+
     # print(sigmoid_gradient(0)) #0.25
 
     # np.random.random(size) 返回size大小的0-1随机浮点数
