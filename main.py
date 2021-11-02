@@ -58,7 +58,7 @@ if __name__ == '__main__':
     weight = loadmat('ex4weights.mat')
     theta1, theta2 = weight['Theta1'], weight['Theta2']  # (25, 401) (10, 26)
     # print(theta1.shape, theta2.shape)
-
+    '''
     sample_idx = np.random.choice(np.arange(data['X'].shape[0]), 100)
     sample_images = data['X'][sample_idx, :]
     fig, ax_array = plt.subplots(nrows=10, ncols=10, sharey=True, sharex=True, figsize=(12, 12))
@@ -68,6 +68,11 @@ if __name__ == '__main__':
             plt.xticks(np.array([]))
             plt.yticks(np.array([]))
     plt.show()
+    '''
+    encoder = OneHotEncoder(sparse=False)
+    y_onehot = encoder.fit_transform(y)  # (5000, 10)
+    # print(y_onehot.shape)
+    print(y[0], y_onehot[0, :])  # [10] [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
 
     # print(sigmoid_gradient(0)) #0.25
 
