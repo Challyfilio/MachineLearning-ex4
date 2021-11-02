@@ -47,6 +47,29 @@ def cost(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rat
     return J
 
 
+def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rate):
+    m = X.shape[0]
+    X = np.matrix(X)
+    y = np.matrix(y)
+
+    # run the feed-forward pass
+    a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
+
+    # compute the cost
+    J = 0
+    for i in range(m):
+        first_term = np.multiply(-y[i, :], np.log(h[i, :]))
+        second_term = np.multiply((1 - y[i, :]), np.log(1 - h[i, :]))
+        J += np.sum(first_term - second_term)
+
+    J = J / m
+
+    # add the cost regularization term
+    J += (float(learning_rate) / (2 * m)) * (np.sum(np.power(theta1[:, 1:], 2)) + np.sum(np.power(theta2[:, 1:], 2)))
+
+    return J
+
+
 if __name__ == '__main__':
     data = loadmat('ex4data1.mat')
     # print(data)
