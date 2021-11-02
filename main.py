@@ -13,12 +13,18 @@ from sklearn.preprocessing import OneHotEncoder
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
+
 def sigmoid_gradient(z):
     return np.multiply(sigmoid(z), (1 - sigmoid(z)))
 
-# Press the green button in the gutter to run the script.
+
 if __name__ == '__main__':
     data = loadmat('ex4data1.mat')
+    print(data)
+
+    X = data['X']
+    y = data['y']
+    print(X.shape, y.shape)
 
     print(sigmoid_gradient(0))
 
