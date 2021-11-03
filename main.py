@@ -35,13 +35,12 @@ def forward_propagate(X, theta1, theta2):
     return a1, z2, a2, z3, h
 
 
+# 代价函数
 def cost(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rate):
     m = X.shape[0]
     X = np.matrix(X)
     y = np.matrix(y)
-    # 从params中获取神经网络参数
-    theta1 = np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
-    theta2 = np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
+
     # 调用前向传播函数
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
 
@@ -57,7 +56,8 @@ def cost(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rat
     return J
 
 
-def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rate):
+# 正则化代价函数
+def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rate):  # learning_rate is λ
     m = X.shape[0]
     X = np.matrix(X)
     y = np.matrix(y)
@@ -79,6 +79,8 @@ def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_
 
     return J
 
+
+# 正则化神经网络
 def backpropReg(params, input_size, hidden_size, num_labels, X, y, learning_rate):
     m = X.shape[0]
     X = np.matrix(X)
@@ -144,10 +146,8 @@ if __name__ == '__main__':
     y = data['y']  # (5000, 1)
     # print(X.shape, y.shape)
 
-    weight = loadmat('ex4weights.mat')
-    theta1, theta2 = weight['Theta1'], weight['Theta2']  # (25, 401) (10, 26)
-    # print(theta1.shape, theta2.shape)
     '''
+    # 可视化
     sample_idx = np.random.choice(np.arange(data['X'].shape[0]), 100)
     sample_images = data['X'][sample_idx, :]
     fig, ax_array = plt.subplots(nrows=10, ncols=10, sharey=True, sharex=True, figsize=(12, 12))
@@ -158,12 +158,19 @@ if __name__ == '__main__':
             plt.yticks(np.array([]))
     plt.show()
     '''
+
+    weight = loadmat('ex4weights.mat')
+    theta1, theta2 = weight['Theta1'], weight['Theta2']  # (25, 401) (10, 26)
+    # print(theta1.shape, theta2.shape)
+
     encoder = OneHotEncoder(sparse=False)
     y_onehot = encoder.fit_transform(y)
     # print(y_onehot.shape)  # (5000, 10)
     # print(y[0], y_onehot[0, :])  # [10] [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
 
     print(cost(theta1, theta2, input_size, hidden_size, num_labels, X, y_onehot, learning_rate))  # 0.2876291651613188
+    print(
+        costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y_onehot, learning_rate))  # 0.38376985909092354
 
     print(sigmoid_gradient(0))  # 0.25
 
@@ -174,10 +181,6 @@ if __name__ == '__main__':
     # theta1 = np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
     # theta2 = np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
     # print(theta1.shape, theta2.shape)  # (25,401),(10,26)
-
-    a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
-
-
 
     # minimize the objective function
     fmin = minimize(fun=backpropReg, x0=(params),
