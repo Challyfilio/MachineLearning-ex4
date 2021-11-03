@@ -16,13 +16,13 @@ def sigmoid_gradient(z):
     return np.multiply(sigmoid(z), (1 - sigmoid(z)))
 
 
-# 前向传播函数
+# 前向传播函数,返回传播结果
 def forward_propagate(X, theta1, theta2):
     m = X.shape[0]
 
-    a1 = np.insert(X, 0, values=np.ones(m), axis=1)
+    a1 = np.insert(X, 0, values=np.ones(m), axis=1)  # 插入一列1元素，偏置
     z2 = a1 * theta1.T
-    a2 = np.insert(sigmoid(z2), 0, values=np.ones(m), axis=1)
+    a2 = np.insert(sigmoid(z2), 0, values=np.ones(m), axis=1)  #
     z3 = a2 * theta2.T
     h = sigmoid(z3)
 
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     encoder = OneHotEncoder(sparse=False)
     y_onehot = encoder.fit_transform(y)  # (5000, 10)
     # print(y_onehot.shape)
-    print(y[0], y_onehot[0, :])  # [10] [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
+    # print(y[0], y_onehot[0, :])  # [10] [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
 
     input_size = 400
     hidden_size = 25
