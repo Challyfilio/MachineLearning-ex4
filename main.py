@@ -7,6 +7,12 @@ from sklearn.metrics import classification_report
 from sklearn.preprocessing import OneHotEncoder
 from scipy.optimize import minimize
 
+# 初始化设置
+input_size = 400
+hidden_size = 25
+num_labels = 10
+learning_rate = 1
+
 
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
@@ -33,8 +39,10 @@ def cost(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_rat
     m = X.shape[0]
     X = np.matrix(X)
     y = np.matrix(y)
-
-    # run the feed-forward pass
+    # 从params中获取神经网络参数
+    theta1 = np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
+    theta2 = np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
+    # 调用前向传播函数
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
 
     # compute the cost
@@ -70,49 +78,6 @@ def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_
     J += (float(learning_rate) / (2 * m)) * (np.sum(np.power(theta1[:, 1:], 2)) + np.sum(np.power(theta2[:, 1:], 2)))
 
     return J
-
-
-def backprop(params, input_size, hidden_size, num_labels, X, y, learning_rate):
-    m = X.shape[0]
-    X = np.matrix(X)
-    y = np.matrix(y)
-
-    a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
-
-    theta1 = np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
-    theta2 = np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
-
-    J = 0
-    delta1 = np.zeros(theta1.shape)
-    delta2 = np.zeros(theta2.shape)
-
-    for i in range(m):
-        first_term = np.multiply(-y[i, :], np.log(h[i, :]))
-        second_term = np.multiply((1 - y[i, :]), np.log(1 - h[i, :]))
-        J += np.sum(first_term - second_term)
-
-    J = J / m
-
-    for t in range(m):
-        a1t = a1[t, :]  # (1, 401)
-        z2t = z2[t, :]  # (1, 25)
-        a2t = a2[t, :]  # (1, 26)
-        ht = h[t, :]  # (1, 10)
-        yt = y[t, :]  # (1, 10)
-
-        d3t = ht - yt  # (1, 10)
-
-        z2t = np.insert(z2t, 0, values=np.ones(1))  # (1, 26)
-        d2t = np.multiply((theta2.T * d3t.T).T, sigmoid_gradient(z2t))  # (1, 26)
-
-        delta1 = delta1 + (d2t[:, 1:]).T * a1t
-        delta2 = delta2 + d3t.T * a2t
-
-    delta1 = delta1 / m
-    delta2 = delta2 / m
-
-    return J, delta1, delta2
-
 
 def backpropReg(params, input_size, hidden_size, num_labels, X, y, learning_rate):
     m = X.shape[0]
@@ -194,21 +159,25 @@ if __name__ == '__main__':
     plt.show()
     '''
     encoder = OneHotEncoder(sparse=False)
-    y_onehot = encoder.fit_transform(y)  # (5000, 10)
-    # print(y_onehot.shape)
+    y_onehot = encoder.fit_transform(y)
+    # print(y_onehot.shape)  # (5000, 10)
     # print(y[0], y_onehot[0, :])  # [10] [0. 0. 0. 0. 0. 0. 0. 0. 0. 1.]
-
-    input_size = 400
-    hidden_size = 25
-    num_labels = 10
-    learning_rate = 1
 
     print(cost(theta1, theta2, input_size, hidden_size, num_labels, X, y_onehot, learning_rate))  # 0.2876291651613188
 
     print(sigmoid_gradient(0))  # 0.25
 
-    # np.random.random(size) 返回size大小的0-1随机浮点数
+    # 随机初始化完整网络参数大小的数组
     params = (np.random.random(size=hidden_size * (input_size + 1) + num_labels * (hidden_size + 1)) - 0.5) * 0.24
+
+    # 将参数数组解开为每个层的参数矩阵
+    # theta1 = np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
+    # theta2 = np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
+    # print(theta1.shape, theta2.shape)  # (25,401),(10,26)
+
+    a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
+
+
 
     # minimize the objective function
     fmin = minimize(fun=backpropReg, x0=(params),
