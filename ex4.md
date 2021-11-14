@@ -1,3 +1,5 @@
+使用反向传播的前馈神经网络，自动学习神经网络的参数。
+
 ### 神经网络
 
 - 向前传播
@@ -11,7 +13,7 @@
 def forward_propagate(X, theta1, theta2):
     m = X.shape[0]
     
-    a1 = np.insert(X, 0, values=np.ones(m), axis=1)
+    a1 = np.insert(X, 0, values=np.ones(m), axis=1) # 插入一列1元素，偏置
     z2 = a1 * theta1.T
     a2 = np.insert(sigmoid(z2), 0, values=np.ones(m), axis=1)
     z3 = a2 * theta2.T
@@ -55,10 +57,9 @@ def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_
     X = np.matrix(X)
     y = np.matrix(y)
 
-    # run the feed-forward pass
+    # 向前传播
     a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
     
-    # compute the cost
     J = 0
     for i in range(m):
         first_term = np.multiply(-y[i,:], np.log(h[i,:]))
@@ -67,7 +68,7 @@ def costReg(theta1, theta2, input_size, hidden_size, num_labels, X, y, learning_
     
     J = J / m
     
-    # add the cost regularization term
+    # 加正则项
     J += (float(learning_rate) / (2 * m)) * (np.sum(np.power(theta1[:,1:], 2)) + np.sum(np.power(theta2[:,1:], 2)))
     
     return J
@@ -139,5 +140,24 @@ def backpropReg(params, input_size, hidden_size, num_labels, X, y, learning_rate
     grad = np.concatenate((np.ravel(delta1), np.ravel(delta2)))
     
     return J, grad
+```
+
+```python
+a1, z2, a2, z3, h = forward_propagate(X, theta1, theta2)
+
+for t in range(m):
+	a1t = a1[t, :]  # (1, 401)
+    z2t = z2[t, :]  # (1, 25)
+    a2t = a2[t, :]  # (1, 26)
+    ht = h[t, :]  # (1, 10)
+    yt = y[t, :]  # (1, 10)
+
+    d3t = ht - yt  # (1, 10)
+
+    z2t = np.insert(z2t, 0, values=np.ones(1))  # (1, 26)
+    d2t = np.multiply((theta2.T * d3t.T).T, sigmoid_gradient(z2t))  # (1, 26)
+
+    delta1 = delta1 + (d2t[:, 1:]).T * a1t
+    delta2 = delta2 + d3t.T * a2t
 ```
 
