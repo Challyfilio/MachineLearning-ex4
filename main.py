@@ -146,7 +146,7 @@ if __name__ == '__main__':
     y = data['y']  # (5000, 1)
     # print(X.shape, y.shape)
 
-    '''
+    #'''
     # 可视化
     sample_idx = np.random.choice(np.arange(data['X'].shape[0]), 100)
     sample_images = data['X'][sample_idx, :]
@@ -157,7 +157,7 @@ if __name__ == '__main__':
             plt.xticks(np.array([]))
             plt.yticks(np.array([]))
     plt.show()
-    '''
+    #'''
 
     weight = loadmat('ex4weights.mat')
     theta1, theta2 = weight['Theta1'], weight['Theta2']  # (25, 401) (10, 26)
